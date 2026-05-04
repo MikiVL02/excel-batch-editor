@@ -40,3 +40,9 @@ Thumbs.db
 # Electron
 dist/
 out/
+
+# Database
+*.db
+
+# Database
+*.db
