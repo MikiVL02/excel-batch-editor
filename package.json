@@ -1,0 +1,13 @@
+{
+  "name": "excel-batch-editor",
+  "version": "0.1.0",
+  "description": "Electron desktop app for bulk editing Excel files",
+  "main": "electron/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "electron .",
+    "build": "electron-builder"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
