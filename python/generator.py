@@ -19,7 +19,7 @@ def generate(req: dict) -> dict:
     output_dir = req["output_dir"]
     filename_pattern = req["filename_pattern"]
 
-    if data_file_path and not rows:
+    if data_file_path and rows is None:
         dwb = load_workbook(data_file_path, data_only=True)
         dws = dwb.active
         headers = [cell.value for cell in next(dws.iter_rows(min_row=1, max_row=1))]
