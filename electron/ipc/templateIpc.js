@@ -55,12 +55,19 @@ ipcMain.handle("template:parse", async (_, filePath) => {
   return callPython({ action: "parse_template", file_path: filePath });
 });
 
+let _mockDialogPath = null;
+if (process.env.NODE_ENV !== "production") {
+  ipcMain.handle("test:mockDialog", (_, p) => { _mockDialogPath = p; });
+}
+
 ipcMain.handle("file:select", async (_, filters = []) => {
+  if (_mockDialogPath) { const p = _mockDialogPath; _mockDialogPath = null; return p; }
   const result = await dialog.showOpenDialog({ filters, properties: ["openFile"] });
   return result.canceled ? null : result.filePaths[0];
 });
 
 ipcMain.handle("file:selectDir", async () => {
+  if (_mockDialogPath) { const p = _mockDialogPath; _mockDialogPath = null; return p; }
   const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
   return result.canceled ? null : result.filePaths[0];
 });

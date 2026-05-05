@@ -14,4 +14,7 @@ contextBridge.exposeInMainWorld("api", {
     ipcRenderer.invoke("file:copyToAppData", srcPath, templateId),
 
   generate: (req) => ipcRenderer.invoke("generate:run", req),
+
+  // 仅测试环境使用：注入下一次对话框返回值
+  mockDialog: (p) => ipcRenderer.invoke("test:mockDialog", p),
 });
