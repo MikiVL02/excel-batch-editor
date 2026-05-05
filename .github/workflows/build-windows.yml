@@ -1,0 +1,66 @@
+name: Build Windows Installer
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Disable Windows Defender real-time protection
+        run: Set-MpPreference -DisableRealtimeMonitoring $true
+        shell: powershell
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install openpyxl==3.1.2 Pillow==10.3.0 pyinstaller
+
+      - name: Build Python executable
+        run: >
+          pyinstaller
+          --onefile
+          --name main
+          --distpath python/dist
+          --workpath python/build
+          --specpath python
+          --hidden-import xl_parser
+          --hidden-import generator
+          --collect-all openpyxl
+          --collect-all et_xmlfile
+          --collect-all PIL
+          python/main.py
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build renderer
+        run: npx vite build --config vite.config.mjs
+        working-directory: renderer
+
+      - name: Build Windows installer
+        run: npx electron-builder --win --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/*.exe
+          if-no-files-found: error
+          retention-days: 30

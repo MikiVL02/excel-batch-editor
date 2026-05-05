@@ -25,8 +25,9 @@
     ],
     "extraResources": [
       {
-        "from": "python/dist/main",
-        "to": "python/main"
+        "from": "python/dist/",
+        "to": "python",
+        "filter": ["main", "main.exe"]
       }
     ],
     "mac": {
@@ -43,6 +44,17 @@
         { "x": 130, "y": 150, "type": "file" },
         { "x": 410, "y": 150, "type": "link", "path": "/Applications" }
       ]
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     }
   },
   "devDependencies": {

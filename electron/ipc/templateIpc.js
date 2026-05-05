@@ -8,7 +8,11 @@ const APPDATA_DIR = path.join(app.getPath("userData"), "excel-batch-editor", "te
 fs.mkdirSync(APPDATA_DIR, { recursive: true });
 
 const PYTHON_BIN = app.isPackaged
-  ? path.join(process.resourcesPath, "python", "main")
+  ? path.join(
+      process.resourcesPath,
+      "python",
+      process.platform === "win32" ? "main.exe" : "main"
+    )
   : path.join(__dirname, "../../python/main.py");
 
 function callPython(payload) {
