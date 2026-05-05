@@ -55,6 +55,7 @@ export default function Generate() {
   async function handleGenerate() {
     if (!selectedId) return alert("请选择模板");
     if (!outputDir) return alert("请选择输出目录");
+    if (dataSource === "file" && !dataFilePath) return alert("请选择数据源 Excel 文件");
 
     setGenerating(true);
     setResults(null);
