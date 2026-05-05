@@ -10,6 +10,7 @@ export default function TemplateConfig() {
   const [name, setName] = useState("");
   const [grp, setGrp] = useState("");
   const [filePath, setFilePath] = useState("");
+  const [originalFilePath, setOriginalFilePath] = useState("");
   const [fields, setFields] = useState([]);
   const [autoDetected, setAutoDetected] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -22,6 +23,7 @@ export default function TemplateConfig() {
           setName(t.name);
           setGrp(t.grp || "");
           setFilePath(t.file_path);
+          setOriginalFilePath(t.file_path);
           setFields(t.fields || []);
         }
       });
@@ -60,7 +62,11 @@ export default function TemplateConfig() {
         const storedPath = await window.api.copyFileToAppData(filePath, tempId);
         await window.api.saveTemplate({ name, grp, file_path: storedPath, fields });
       } else {
-        await window.api.updateTemplate(id, { name, grp, fields });
+        let storedPath;
+        if (filePath !== originalFilePath) {
+          storedPath = await window.api.copyFileToAppData(filePath, id);
+        }
+        await window.api.updateTemplate(id, { name, grp, file_path: storedPath, fields });
       }
       navigate("/templates");
     } finally {

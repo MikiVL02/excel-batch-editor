@@ -69,6 +69,8 @@ export default function Generate() {
         filename_pattern: filenamePattern,
       });
       setResults(result.results);
+    } catch (err) {
+      alert("生成失败：" + (err.message || String(err)));
     } finally {
       setGenerating(false);
     }

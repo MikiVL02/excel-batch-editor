@@ -19,11 +19,11 @@ function saveTemplate({ name, grp = "", file_path, fields = [] }) {
   return id;
 }
 
-function updateTemplate(id, { name, grp, fields }) {
+function updateTemplate(id, { name, grp, file_path, fields }) {
   const now = new Date().toISOString();
-  if (name !== undefined || grp !== undefined) {
-    db.prepare("UPDATE templates SET name = COALESCE(?, name), grp = COALESCE(?, grp), updated_at = ? WHERE id = ?")
-      .run(name ?? null, grp ?? null, now, id);
+  if (name !== undefined || grp !== undefined || file_path !== undefined) {
+    db.prepare("UPDATE templates SET name = COALESCE(?, name), grp = COALESCE(?, grp), file_path = COALESCE(?, file_path), updated_at = ? WHERE id = ?")
+      .run(name ?? null, grp ?? null, file_path ?? null, now, id);
   }
   if (fields !== undefined) {
     db.prepare("DELETE FROM fields WHERE template_id = ?").run(id);
