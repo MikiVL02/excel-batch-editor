@@ -39,6 +39,7 @@ Thumbs.db
 
 # Electron
 dist/
+renderer/dist/
 out/
 
 # Database
