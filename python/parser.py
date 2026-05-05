@@ -13,10 +13,10 @@ def parse_template(file_path: str) -> dict:
         for row in ws.iter_rows():
             for cell in row:
                 if cell.value and isinstance(cell.value, str):
-                    m = PLACEHOLDER_RE.search(cell.value)
-                    if m:
+                    matches = PLACEHOLDER_RE.findall(cell.value)
+                    for name in matches:
                         placeholders.append({
-                            "name": m.group(1),
+                            "name": name,
                             "sheet": sheet_name,
                             "cell": cell.coordinate,
                         })

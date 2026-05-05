@@ -26,3 +26,12 @@ def test_placeholder_has_cell_info():
     biaohao = next(p for p in result["placeholders"] if p["name"] == "编号")
     assert biaohao["sheet"] == "Sheet1"
     assert biaohao["cell"] == "B3"
+
+def test_multiple_placeholders_in_one_cell():
+    result = parse_template(FIXTURE)
+    names = [p["name"] for p in result["placeholders"]]
+    assert "客户名" in names
+    assert "编号" in names  # 已在其他地方存在，但也在 E9 中
+    # 验证 E9 中的两个占位符都被检测到
+    e9_placeholders = [p for p in result["placeholders"] if p["cell"] == "E9"]
+    assert len(e9_placeholders) == 2
