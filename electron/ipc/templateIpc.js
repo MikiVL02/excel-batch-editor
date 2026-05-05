@@ -28,6 +28,7 @@ function callPython(payload) {
         reject(new Error("Python 返回了无效 JSON: " + stdout));
       }
     });
+    proc.on("error", (e) => reject(new Error("Python 进程启动失败: " + e.message)));
     proc.stdin.write(JSON.stringify(payload) + "\n");
     proc.stdin.end();
   });
