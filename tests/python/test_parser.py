@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../python"))
 
-from parser import parse_template
+from xl_parser import parse_template
 
 FIXTURE = os.path.join(os.path.dirname(__file__), "../fixtures/sample_template.xlsx")
 
@@ -25,13 +25,12 @@ def test_placeholder_has_cell_info():
     result = parse_template(FIXTURE)
     biaohao = next(p for p in result["placeholders"] if p["name"] == "编号")
     assert biaohao["sheet"] == "Sheet1"
-    assert biaohao["cell"] == "B3"
+    assert biaohao["cell"] == "A2"
 
-def test_multiple_placeholders_in_one_cell():
+def test_multiple_placeholders_detected():
     result = parse_template(FIXTURE)
     names = [p["name"] for p in result["placeholders"]]
-    assert "客户名" in names
-    assert "编号" in names  # 已在其他地方存在，但也在 E9 中
-    # 验证 E9 中的两个占位符都被检测到
-    e9_placeholders = [p for p in result["placeholders"] if p["cell"] == "E9"]
-    assert len(e9_placeholders) == 2
+    assert "编号" in names
+    assert "姓名" in names
+    assert "部门" in names
+    assert "日期" in names

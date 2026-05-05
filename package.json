@@ -6,8 +6,44 @@
     "start": "electron .",
     "dev": "concurrently \"npm run dev:renderer\" \"wait-on http://localhost:5173 && NODE_ENV=development electron .\"",
     "dev:renderer": "vite --config renderer/vite.config.mjs --port 5173 --strictPort",
-    "build": "vite build --config renderer/vite.config.mjs && electron-builder",
-    "test": "cd /Users/mikivl/workspace/excel-batch-editor && python3 -m pytest tests/python/ -v"
+    "build:python": "cd python && .venv/bin/pyinstaller --onefile --name main --distpath dist --workpath build --specpath . --hidden-import xl_parser --hidden-import generator --collect-all openpyxl --collect-all et_xmlfile --collect-all PIL main.py",
+    "build": "cd renderer && npx vite build --config vite.config.mjs && cd .. && electron-builder",
+    "dist": "npm run build:python && npm run build",
+    "test": "/Users/mikivl/workspace/excel-batch-editor/python/.venv/bin/pytest tests/python/ -v"
+  },
+  "build": {
+    "appId": "com.excelbatcheditor.app",
+    "productName": "Excel批量编辑器",
+    "files": [
+      "electron/**/*",
+      "renderer/dist/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "python/dist/main",
+        "to": "python/main"
+      }
+    ],
+    "mac": {
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "target": [
+        { "target": "dmg", "arch": "arm64" }
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "dmg": {
+      "contents": [
+        { "x": 130, "y": 150, "type": "file" },
+        { "x": 410, "y": 150, "type": "link", "path": "/Applications" }
+      ]
+    }
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",

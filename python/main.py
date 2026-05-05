@@ -10,7 +10,7 @@ def main():
             req = json.loads(line)
             action = req.get("action")
             if action == "parse_template":
-                from parser import parse_template
+                from xl_parser import parse_template
                 result = parse_template(req["file_path"])
             elif action == "generate":
                 from generator import generate
