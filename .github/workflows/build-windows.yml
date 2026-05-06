@@ -46,7 +46,9 @@ jobs:
           node-version: "18"
 
       - name: Install Node dependencies
-        run: npm install
+        run: |
+          Remove-Item package-lock.json -ErrorAction SilentlyContinue
+          npm install
 
       - name: Build renderer
         run: npx vite build --config vite.config.mjs
