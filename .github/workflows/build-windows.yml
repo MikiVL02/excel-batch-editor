@@ -46,7 +46,7 @@ jobs:
           node-version: "18"
 
       - name: Install Node dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build renderer
         run: npx vite build --config vite.config.mjs
