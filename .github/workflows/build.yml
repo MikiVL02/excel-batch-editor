@@ -1,0 +1,91 @@
+name: 构建安装包
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装 Node 依赖
+        run: npm ci
+
+      - name: 安装 Python 依赖并打包
+        run: |
+          cd python
+          python -m venv .venv
+          .venv\Scripts\pip install -r requirements.txt pyinstaller
+          .venv\Scripts\pyinstaller --onefile --name main --distpath dist --workpath build --specpath . --hidden-import xl_parser --hidden-import generator --collect-all openpyxl --collect-all et_xmlfile --collect-all PIL main.py
+        shell: cmd
+
+      - name: 构建 Renderer
+        run: cd renderer && npx vite build --config vite.config.mjs
+
+      - name: 打包 Electron（Windows）
+        run: npx electron-builder --win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 上传 Windows 安装包
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/*.exe
+          retention-days: 30
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装 Node 依赖
+        run: npm ci
+
+      - name: 安装 Python 依赖并打包
+        run: |
+          cd python
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements.txt pyinstaller
+          .venv/bin/pyinstaller --onefile --name main --distpath dist --workpath build --specpath . --hidden-import xl_parser --hidden-import generator --collect-all openpyxl --collect-all et_xmlfile --collect-all PIL main.py
+
+      - name: 构建 Renderer
+        run: cd renderer && npx vite build --config vite.config.mjs
+
+      - name: 打包 Electron（macOS）
+        run: npx electron-builder --mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: 上传 macOS 安装包
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-installer
+          path: dist/*.dmg
+          retention-days: 30
