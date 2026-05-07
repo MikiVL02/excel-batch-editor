@@ -18,16 +18,19 @@ const PYTHON_BIN = app.isPackaged
 function callPython(payload) {
   return new Promise((resolve, reject) => {
     const isPackaged = app.isPackaged;
+    // PYTHONUTF8=1 确保 Windows 上 Python 使用 UTF-8 编码
+    const spawnEnv = { ...process.env, PYTHONUTF8: "1" };
     const proc = isPackaged
-      ? spawn(PYTHON_BIN)
-      : spawn(process.env.PYTHON_PATH || "python3", [PYTHON_BIN]);
+      ? spawn(PYTHON_BIN, [], { env: spawnEnv })
+      : spawn(process.env.PYTHON_PATH || "python3", [PYTHON_BIN], { env: spawnEnv });
 
-    let stdout = "";
-    proc.stdout.on("data", (d) => (stdout += d));
-    proc.stderr.on("data", (d) => console.error("[python]", d.toString()));
+    const chunks = [];
+    proc.stdout.on("data", (d) => chunks.push(d));
+    proc.stderr.on("data", (d) => console.error("[python]", d.toString("utf8")));
     proc.on("close", () => {
+      const stdout = Buffer.concat(chunks).toString("utf8").trim();
       try {
-        resolve(JSON.parse(stdout.trim()));
+        resolve(JSON.parse(stdout));
       } catch (e) {
         reject(new Error("Python 返回了无效 JSON: " + stdout));
       }

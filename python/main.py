@@ -1,5 +1,10 @@
 import sys
 import json
+import io
+
+# Windows 默认编码不是 UTF-8，强制设置
+sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", line_buffering=True)
 
 def main():
     for line in sys.stdin:
